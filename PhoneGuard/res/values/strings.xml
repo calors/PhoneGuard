@@ -1,8 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">PhoneGuard</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="app_name">手机卫士</string>
     <string name="action_settings">Settings</string>
+    <string name="title_activity_setting">设置</string>
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="text_welcome">欢迎使用手机卫士</string>
+    <string name="text_pwd">密码</string>
+    <string name="hint_pwd">输入密码</string>
+    <string name="text_pwdcheck">确认密码</string>
+    <string name="hint_pwdcheck">再次输入密码</string>
+    <string name="text_question">问题</string>
+    <string name="text_answer">答案</string>
+    <string name="hint_answer">输入答案</string>
+    <string name="text_telephone">好友电话</string>
+    <string name="hint_telephone">输入好友电话</string>
+    <string name="btn_commit">设    置</string>
 
+    <string-array name="questionList">
+        <item >你的生日</item>
+        <item >你的配偶的生日</item>
+        <item >你父亲的名字</item>
+        <item >你母亲的名字</item>
+    </string-array>
 </resources>
