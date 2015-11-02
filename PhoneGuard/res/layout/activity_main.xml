@@ -4,7 +4,8 @@
     android:layout_height="match_parent"
     android:background="@drawable/bg_fangdao"
     android:gravity="center"
-    tools:context="com.yjb.guard.MainActivity" >
+    tools:context="com.yjb.guard.MainActivity"
+    style="@android:style/Theme.NoTitleBar.Fullscreen" >
 
     <TextView
         android:layout_width="wrap_content"

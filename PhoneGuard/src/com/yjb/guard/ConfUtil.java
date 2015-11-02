@@ -25,12 +25,12 @@ import android.content.SharedPreferences.Editor;
  */
 public class ConfUtil
 {
+	private static ConfUtil instance = null;
 	public static final String PWD_KEY = "pwd";// 密码
 	public static final String ANSWER_KEY = "answer";// 答案
 	public static final String QUESTION_KEY = "question";// 问题
 	public static final String TELEPHONE_KEY = "telephone";// 好友电话号码
 	public static final String SIMNUMBER = "sim";// 保存sim卡的信息
-	
 	private SharedPreferences mPreferences;
 	private Editor mEditor;
 	// 密码
@@ -45,12 +45,57 @@ public class ConfUtil
 	private String mSim;
 
 	/**
+	 * 二进制转十六进制
 	 * 
+	 * @param bytes
+	 * @return
 	 */
-	public ConfUtil(Context context)
+	/*
+	 * private static String bytesToHex(byte[] bytes) { StringBuffer md5str =
+	 * new StringBuffer(); // 把数组每一字节换成16进制连成md5字符串 for (int digital : bytes) {
+	 * if (digital < 0) { digital += 256;// 此处注意，计算机是按补码存储，所以加256 //
+	 * 例如果是负数如-1，则其补码为11111111，对应为255 } if (digital < 16) {
+	 * md5str.append("0");// 两位16进制数表示，00~FF，小于十六则第一位为0 }
+	 * md5str.append(Integer.toHexString(digital)); } return
+	 * md5str.toString().toUpperCase(); }
+	 */
+	/**
+	 * 
+	 * md5Encrytor:MD5加密. <br/>
+	 * 
+	 * @author jroz
+	 * @param value
+	 * @return MD5值的十六进制字符串
+	 * @since JDK 1.6
+	 */
+	/*
+	 * public String md5Encrytor(String value) { MessageDigest md5 = null;
+	 * byte[] result = null; try { // 1.创建一个提供信息摘要算法的对象，初始化为md5算法对象,可以填写AES，RSA等
+	 * md5 = MessageDigest.getInstance("MD5"); // 2.value.getBytes() 转换成字节数组 //
+	 * 3.计算后获得字节数组（MD5加密，128位） result = md5.digest(value.getBytes()); } catch
+	 * (NoSuchAlgorithmException e) { // TODO Auto-generated catch block
+	 * e.printStackTrace(); } // 将计算得到的md5值转换成16进制，节省空间 return
+	 * bytesToHex(result); }
+	 */
+	public static ConfUtil getConfUtil(Context context)
 	{
-		mPreferences = context.getSharedPreferences("yjb",
-				Context.MODE_PRIVATE);
+		if (instance == null)
+		{
+			synchronized (ConfUtil.class)
+			{
+				if (instance == null)
+				{
+					instance = new ConfUtil(context);
+				}
+			}
+		}
+		return instance;
+	}
+
+	private ConfUtil(Context context)
+	{
+		mPreferences = context
+				.getSharedPreferences("yjb", Context.MODE_PRIVATE);
 		mEditor = mPreferences.edit();
 	}
 
