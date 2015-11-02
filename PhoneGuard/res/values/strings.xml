@@ -4,7 +4,7 @@
     <string name="app_name">手机卫士</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_setting">设置</string>
-    <string name="title_activity_login">LoginActivity</string>
+    <string name="title_activity_login">登录</string>
     <string name="text_welcome">欢迎使用手机卫士</string>
     <string name="text_pwd">密码</string>
     <string name="hint_pwd">输入密码</string>
@@ -18,9 +18,20 @@
     <string name="btn_commit">设    置</string>
 
     <string-array name="questionList">
-        <item >你的生日</item>
-        <item >你的配偶的生日</item>
-        <item >你父亲的名字</item>
-        <item >你母亲的名字</item>
+        <item>你的生日</item>
+        <item>你的配偶的生日</item>
+        <item>你父亲的名字</item>
+        <item>你母亲的名字</item>
     </string-array>
+
+    <string name="text_login">登  录</string>
+    <string name="text_lostPassword">忘记密码</string>
+    <string name="title_activity_home">主页</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_find_pass">找回密码</string>
+    <string name="text_chooseQuestion">请选择问题</string>
+    <string name="text_findPwd">找回密码</string>
+    <string name="title_activity_show">帮助</string>
+    <string name="text_help">备份：\n#back#密码\n报警：\n#alarm#密码\n定位：\n#locat#密码\n删除：\n#del#密码\n锁屏：\n#lock#密码\n</string>
+
 </resources>

@@ -2,6 +2,7 @@ package com.yjb.guard;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
@@ -46,7 +47,7 @@ public class SettingActivity extends Activity
 	{
 		// 通过系统服务,获取电话管理器
 		mManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-		mUtil = new ConfUtil(mContext);
+		mUtil = ConfUtil.getConfUtil(mContext);
 		mPwd = (EditText) findViewById(R.id.edPwd);
 		mPwdChcek = (EditText) findViewById(R.id.edPwdCheck);
 		mQuestion = (Spinner) findViewById(R.id.spQuestion);
@@ -115,5 +116,9 @@ public class SettingActivity extends Activity
 		mUtil.setQuestion(mSelectedQuestion);
 		mUtil.setSim(_Sim_numer);
 		mUtil.setTelephone(_telephone);
+		// 设置成功 跳转到登录界面
+		Toast.makeText(mContext, "设置成功", Toast.LENGTH_SHORT).show();
+		startActivity(new Intent(mContext, LoginActivity.class));
+		finish();
 	}
 }
