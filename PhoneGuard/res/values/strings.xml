@@ -32,6 +32,8 @@
     <string name="text_chooseQuestion">请选择问题</string>
     <string name="text_findPwd">找回密码</string>
     <string name="title_activity_show">帮助</string>
-    <string name="text_help">备份：\n#back#密码\n报警：\n#alarm#密码\n定位：\n#locat#密码\n删除：\n#del#密码\n锁屏：\n#lock#密码\n</string>
+    <string name="text_help">备份：\n#back#密码\n报警：\n#alarm#密码\n定位：\n#locate#密码\n删除：\n#del#密码\n锁屏：\n#lock#密码\n</string>
+    <string name="hint_inputpass">请输入密码解锁</string>
+    <string name="text_unlock">解  锁</string>
 
 </resources>
