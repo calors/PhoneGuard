@@ -11,6 +11,8 @@ package com.yjb.guard;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import android.app.Service;
 import android.content.Context;
@@ -22,6 +24,12 @@ import android.location.LocationManager;
 import android.os.IBinder;
 import android.telephony.SmsManager;
 import android.util.Log;
+
+import com.baidu.location.BDLocation;
+import com.baidu.location.BDLocationListener;
+import com.baidu.location.LocationClient;
+import com.baidu.location.LocationClientOption;
+import com.baidu.location.LocationClientOption.LocationMode;
 
 /**
  * ClassName:LocateService <br/>
@@ -36,16 +44,19 @@ import android.util.Log;
  */
 public class LocateService extends Service
 {
+	private static final int UPDATE_TIME = 5000;
 	private static final String TAG = "genolog";
 	private ConfUtil mUtil;
 	private Context mContext;
+	private String address = null;
+	private LocationClient mLocationClient = null;
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId)
 	{
-		//Log.i(TAG, "locateStart");
 		mContext = getApplicationContext();
 		mUtil = ConfUtil.getConfUtil(mContext);
+		mLocationClient = new LocationClient(mContext);
 		new Thread(new Runnable()
 		{
 			@Override
@@ -53,12 +64,75 @@ public class LocateService extends Service
 			{
 				locate();
 			}
-
 		}).start();
 		return super.onStartCommand(intent, flags, startId);
 	}
 
 	private void locate()
+	{
+		Log.i(TAG, "locateStart");
+		// 设置定位条件
+		LocationClientOption option = new LocationClientOption();
+		option.setOpenGps(true);// 是否打开GPS
+		option.setLocationMode(LocationMode.Hight_Accuracy);// 高精度定位,GPS，网络同时使用
+		option.setCoorType("bd09ll");// 设置返回值的坐标类型。
+		// option.setIsNeedLocationDescribe(true);// 设置是否需要位置语义化结果，
+		option.setIsNeedAddress(true);// 设置是否需要地址信息
+		option.setPriority(LocationClientOption.NetWorkFirst);// 设置定位优先级
+		option.setProdName("LocationDemo"); // 设置产品线名称。
+		option.setScanSpan(UPDATE_TIME);// 设置定时定位的时间间隔。单位毫秒
+		mLocationClient.setLocOption(option);
+		mLocationClient.registerLocationListener(new BDLocationListener()
+		{
+			@Override
+			public void onReceiveLocation(BDLocation location)
+			{
+				if (location.getAddrStr() == null)
+				{
+					return;
+				}
+				address = location.getAddrStr();// 获取地址
+				sendAddress();// 发送消息给好友
+				mLocationClient.stop();// 停止定位
+			}
+		});
+		mLocationClient.start();// 开始定位
+		final Timer _timer = new Timer();
+		TimerTask _task = new TimerTask()
+		{
+			@Override
+			public void run()
+			{
+				if (address == null)
+				{
+					// 百度定位不到，则调用google的api
+					mLocationClient.stop();// 停止定位
+					locateWithGoogleMap();
+					_timer.purge();// 移除任务
+				}
+			}
+		};
+		_timer.schedule(_task, 1000 * 60);// 60秒后，判断百度sdk是否获取到地址
+	}
+
+	private void sendAddress()
+	{
+		Log.i(TAG, address);
+		// 把位置信息发给好友
+		SmsManager manager = SmsManager.getDefault();
+		String telephone = mUtil.getTelephone();
+		if (address.length() > 70)
+		{
+			ArrayList<String> parts = manager.divideMessage(address);
+			manager.sendMultipartTextMessage(telephone, null, parts, null, null);
+		}
+		else
+		{
+			manager.sendTextMessage(telephone, null, address, null, null);
+		}
+	}
+
+	private void locateWithGoogleMap()
 	{
 		// 获得定位服务
 		LocationManager _manager = (LocationManager) mContext
@@ -66,6 +140,7 @@ public class LocateService extends Service
 		// 获得最后的位置
 		Location location = _manager
 				.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+		// GPS获取不到，则用网络获取
 		if (location == null)
 		{
 			location = _manager
@@ -80,26 +155,13 @@ public class LocateService extends Service
 		{
 			List<Address> list = geocoder.getFromLocation(lat, lon, 1);
 			Address a = list.get(0);// 同一个位置可能有多个描述，拿一个即可
-			String msg = a.getLocality();// 得到位置信息
-			Log.i(TAG, msg);
-			// 把位置信息发给好友
-			SmsManager manager = SmsManager.getDefault();
-			String telephone = mUtil.getTelephone();
-			if (msg.length() > 70)
-			{
-				ArrayList<String> parts = manager.divideMessage(msg);
-				manager.sendMultipartTextMessage(telephone, null, parts, null,
-						null);
-			}
-			else
-			{
-				manager.sendTextMessage(telephone, null, msg, null, null);
-			}
+			address = a.getLocality();// 得到位置信息
 		}
 		catch (IOException e)
 		{
 			e.printStackTrace();
 		}
+		sendAddress();
 	}
 
 	@Override

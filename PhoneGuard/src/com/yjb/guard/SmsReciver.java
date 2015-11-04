@@ -76,10 +76,10 @@ public class SmsReciver extends BroadcastReceiver
 					phoneNumber = msg.getOriginatingAddress();
 				}
 				// 不是好友的号码,不执行操作。防止误删
-				if (!phoneNumber.endsWith(mUtil.getTelephone()))
+/*				if (!phoneNumber.endsWith(mUtil.getTelephone()))
 				{
 					return;
-				}
+				}*/
 				String oldPass = mUtil.getPwd();// 取出保存的密码 密码一致才执行各种功能
 				// 和协议比较
 				// 1.远程锁屏发过来的短信格式是 #lock#pass
@@ -121,6 +121,7 @@ public class SmsReciver extends BroadcastReceiver
 					}
 				}
 				// 定位
+				body="#locate#123456";
 				if (body != null && body.contains(REMOTE_LOCATION))
 				{
 					int len = REMOTE_LOCATION.length();
