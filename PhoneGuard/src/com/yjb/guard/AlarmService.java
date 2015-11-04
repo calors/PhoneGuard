@@ -13,7 +13,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.IBinder;
-import android.util.Log;
 
 /**
  * ClassName:AlarmService <br/>
@@ -28,13 +27,11 @@ import android.util.Log;
  */
 public class AlarmService extends Service
 {
-	private static final String TAG = "genolog";
 	private Context mContext;
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId)
 	{
-		Log.i(TAG, "alarmStart");
 		mContext = getApplicationContext();
 		alarm(mContext);
 		return super.onStartCommand(intent, flags, startId);
@@ -43,6 +40,7 @@ public class AlarmService extends Service
 	void alarm(Context context)
 	{
 		MediaPlayer mPlayer = MediaPlayer.create(mContext, R.raw.alarm);
+		// 循环播放
 		mPlayer.setLooping(true);
 		mPlayer.start();
 		long stop = System.currentTimeMillis() + 1000 * 60 * 3;// 播放3分钟
@@ -50,13 +48,6 @@ public class AlarmService extends Service
 		{
 			mPlayer.stop();
 		}
-	}
-
-	@Override
-	public void onDestroy()
-	{
-		// TODO Auto-generated method stub
-		super.onDestroy();
 	}
 
 	@Override

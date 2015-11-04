@@ -11,9 +11,8 @@ package com.yjb.guard;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.telephony.TelephonyManager;
 import android.telephony.SmsManager;
-import android.util.Log;
+import android.telephony.TelephonyManager;
 
 /**
  * ClassName:CheckSimReciver <br/>
@@ -26,17 +25,14 @@ import android.util.Log;
  * @since JDK 1.6
  * @see
  */
-@SuppressWarnings("deprecation")
 public class CheckSimReciver extends BroadcastReceiver
 {
-	private static final String TAG = "genolog";
 	private TelephonyManager mManager;
 	private ConfUtil mUtil;
 
 	@Override
 	public void onReceive(Context context, Intent intent)
 	{
-		Log.i(TAG, "receive");
 		mManager = (TelephonyManager) context
 				.getSystemService(Context.TELEPHONY_SERVICE);
 		mUtil = ConfUtil.getConfUtil(context);

@@ -9,13 +9,10 @@
 package com.yjb.guard;
 
 import android.content.BroadcastReceiver;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.telephony.SmsMessage;
-import android.util.Log;
-import android.widget.Toast;
 
 /**
  * ClassName:SimReciver <br/>
@@ -37,9 +34,7 @@ public class SmsReciver extends BroadcastReceiver
 	public static final String REMOTE_DEL = "#del#";
 	public static final String REMOTE_LOCATION = "#locate#";
 	public static final String REMOTE_ALARM = "#alarm#";
-	private static final String TAG = "genolog";
 	private ConfUtil mUtil;
-	private ContentResolver mResolver;// 得到内容解析者
 	private Context mContext;
 
 	@Override
@@ -47,7 +42,6 @@ public class SmsReciver extends BroadcastReceiver
 	{
 		mContext = context;
 		mUtil = ConfUtil.getConfUtil(mContext);
-		mResolver = context.getContentResolver();
 		// 侦听短信的广播后从收到的短信中获取短信的发送方和短信内容,自行处理
 		String action = intent.getAction();
 		if (SMS_RECEIVED_ACTION.equals(action))
@@ -76,10 +70,10 @@ public class SmsReciver extends BroadcastReceiver
 					phoneNumber = msg.getOriginatingAddress();
 				}
 				// 不是好友的号码,不执行操作。防止误删
-/*				if (!phoneNumber.endsWith(mUtil.getTelephone()))
+				if (!phoneNumber.endsWith(mUtil.getTelephone()))
 				{
 					return;
-				}*/
+				}
 				String oldPass = mUtil.getPwd();// 取出保存的密码 密码一致才执行各种功能
 				// 和协议比较
 				// 1.远程锁屏发过来的短信格式是 #lock#pass
@@ -90,7 +84,6 @@ public class SmsReciver extends BroadcastReceiver
 					if (oldPass.equals(pwd))
 					{
 						abortBroadcast();// 把广播结束掉，否则小偷也看到这条短信了
-						// Toast.makeText(mContext, "正在锁屏...", 1).show();
 						// 锁屏操作
 						lock();
 					}
@@ -98,12 +91,10 @@ public class SmsReciver extends BroadcastReceiver
 				// 备份
 				if (body != null && body.contains(REMOTE_BACK))
 				{
-					Log.i(TAG, "receive" + body);
 					int len = REMOTE_BACK.length();
 					String pwd = body.substring(len);// 截取出短信中的密码
 					if (oldPass.equals(pwd))
 					{
-						// Toast.makeText(mContext, "back", 0).show();
 						abortBroadcast();// 把广播结束掉，否则小偷也看到这条短信了
 						back();
 					}
@@ -115,20 +106,17 @@ public class SmsReciver extends BroadcastReceiver
 					String pwd = body.substring(len);// 截取出短信中的密码
 					if (oldPass.equals(pwd))
 					{
-						Toast.makeText(mContext, "delete", 0).show();
 						abortBroadcast();// 把广播结束掉，否则小偷也看到这条短信了
 						delete();
 					}
 				}
 				// 定位
-				body="#locate#123456";
 				if (body != null && body.contains(REMOTE_LOCATION))
 				{
 					int len = REMOTE_LOCATION.length();
 					String pwd = body.substring(len);// 截取出短信中的密码
 					if (oldPass.equals(pwd))
 					{
-						Toast.makeText(mContext, "locate", 0).show();
 						abortBroadcast();// 把广播结束掉，否则小偷也看到这条短信了
 						locate();
 					}
@@ -140,7 +128,6 @@ public class SmsReciver extends BroadcastReceiver
 					String pwd = body.substring(len);// 截取出短信中的密码
 					if (oldPass.equals(pwd))
 					{
-						Toast.makeText(mContext, "alarm", 0).show();
 						abortBroadcast();// 把广播结束掉，否则小偷也看到这条短信了
 						alarm();
 					}
@@ -151,28 +138,24 @@ public class SmsReciver extends BroadcastReceiver
 
 	private void alarm()
 	{
-		Log.i(TAG, "alarm");
 		Intent service = new Intent(mContext, AlarmService.class);
 		mContext.startService(service);
 	}
 
 	private void locate()
 	{
-		Log.i(TAG, "locate");
 		Intent service = new Intent(mContext, LocateService.class);
 		mContext.startService(service);
 	}
 
 	private void delete()
 	{
-		Log.i(TAG, "delete");
 		Intent service = new Intent(mContext, DelService.class);
 		mContext.startService(service);
 	}
 
 	private void back()
 	{
-		Log.i(TAG, "backup");
 		Intent service = new Intent(mContext, BackUpService.class);
 		mContext.startService(service);
 	}

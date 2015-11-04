@@ -33,8 +33,6 @@ import android.provider.MediaStore.MediaColumns;
  */
 public class DelService extends Service
 {
-	private static final String TAG = "genolog";
-	private ConfUtil mUtil;
 	private ContentResolver mResolver;
 	private Context mContext;
 
@@ -66,8 +64,7 @@ public class DelService extends Service
 	{
 		Cursor cs = mResolver.query(
 				android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-				new String[] { MediaColumns.DATA },
-				null, null, null);
+				new String[] { MediaColumns.DATA }, null, null, null);
 		while (cs.moveToNext())
 		{
 			String path = cs.getString(0);
@@ -81,8 +78,7 @@ public class DelService extends Service
 	{
 		Cursor cs = mResolver.query(
 				android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-				new String[] { MediaColumns.DATA },
-				null, null, null);
+				new String[] { MediaColumns.DATA }, null, null, null);
 		while (cs.moveToNext())
 		{
 			String path = cs.getString(0);
@@ -96,21 +92,13 @@ public class DelService extends Service
 	{
 		Cursor cs = mResolver.query(
 				android.provider.MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
-				new String[] { MediaColumns.DATA },
-				null, null, null);
+				new String[] { MediaColumns.DATA }, null, null, null);
 		while (cs.moveToNext())
 		{
 			String path = cs.getString(0);
 			File file = new File(path);
 			file.delete();
 		}
-	}
-
-	@Override
-	public void onDestroy()
-	{
-		// TODO Auto-generated method stub
-		super.onDestroy();
 	}
 
 	@Override

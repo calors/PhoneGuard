@@ -34,7 +34,6 @@ import android.telephony.SmsManager;
  */
 public class BackUpService extends Service
 {
-	private static final String TAG = "genolog";
 	private ConfUtil mUtil;
 	private ContentResolver mResolver;
 	private Context mContext;
@@ -42,78 +41,77 @@ public class BackUpService extends Service
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId)
 	{
-		// Log.i(TAG, "backupStart");
 		mContext = getApplicationContext();
 		mResolver = getContentResolver();
 		mUtil = ConfUtil.getConfUtil(mContext);
-		//启用新线程 避免阻塞
+		// 启用新线程 避免阻塞
 		new Thread(new Runnable()
 		{
 			@Override
 			public void run()
 			{
-				backup();
+				backUp();
 			}
 		}).start();
 		return super.onStartCommand(intent, flags, startId);
 	}
 
-	// 备份
-	private void backup()
+	private void backUp()
 	{
-		Uri uri = ContactsContract.Contacts.CONTENT_URI;
-		String[] columns1 = { BaseColumns._ID,
+		// 联系人的URI
+		Uri _uri = ContactsContract.Contacts.CONTENT_URI;
+		// 设置查询的列：ID和名字
+		String[] selection = { BaseColumns._ID,
 				ContactsContract.Contacts.DISPLAY_NAME };
-		Cursor cursor = mResolver.query(uri, columns1, null, null, null);
-		// Log.i(TAG, "startQuery");
-		StringBuffer buffer = new StringBuffer();
-		while (cursor.moveToNext())
+		// 查询
+		Cursor _cursor = mResolver.query(_uri, selection, null, null, null);
+		// buffer用来缓存所有的联系人的信息
+		StringBuffer _buffer = new StringBuffer();
+		while (_cursor.moveToNext())
 		{
-			int id = cursor.getInt(cursor.getColumnIndex(BaseColumns._ID));
-			String name = cursor.getString(cursor
+			// 获得ID
+			int _ID = _cursor.getInt(_cursor.getColumnIndex(BaseColumns._ID));
+			// 获得名字
+			String _name = _cursor.getString(_cursor
 					.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
-			buffer.append(name + ":");
+			_buffer.append(_name + ":");
 			// 查出这个人有多少个电话: 由id获取对应这个id的电话
-			Uri uri2 = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
-			String comlums2[] = { ContactsContract.CommonDataKinds.Phone.NUMBER };
-			Cursor cursor2 = mResolver.query(uri2, comlums2,
+			Uri _uri2 = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
+			// 设置查询的列：number
+			String selection2[] = { ContactsContract.CommonDataKinds.Phone.NUMBER };
+			// 通过id查询
+			Cursor cursor2 = mResolver.query(_uri2, selection2,
 					ContactsContract.CommonDataKinds.Phone.CONTACT_ID + "=?",
-					new String[] { String.valueOf(id) }, null);
+					new String[] { String.valueOf(_ID) }, null);
 			while (cursor2.moveToNext())
 			{
+				// 获得电话号码
 				String phone = cursor2
 						.getString(cursor2
 								.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-				buffer.append(phone + "/");
+				_buffer.append(phone + "/");
 			}
 		}
 		// 查找完成，发短信
-		String telephone = mUtil.getTelephone();
-		SmsManager manager = SmsManager.getDefault();
-		String msg = buffer.toString();
-		// Log.i(TAG, msg);
+		String _telephone = mUtil.getTelephone();// 获得好友号码
+		SmsManager _manager = SmsManager.getDefault();// 获得消息管理器
+		String msg = _buffer.toString();
 		if (msg.length() > 70)
 		{
-			ArrayList<String> parts = manager.divideMessage(msg);
-			manager.sendMultipartTextMessage(telephone, null, parts, null, null);
+			// 把短信拆分
+			ArrayList<String> parts = _manager.divideMessage(msg);
+			_manager.sendMultipartTextMessage(_telephone, null, parts, null,
+					null);
 		}
 		else
 		{
-			manager.sendTextMessage(telephone, null, msg, null, null);
+			_manager.sendTextMessage(_telephone, null, msg, null, null);
 		}
-	}
-
-	@Override
-	public void onDestroy()
-	{
-		// TODO Auto-generated method stub
-		super.onDestroy();
 	}
 
 	@Override
 	public IBinder onBind(Intent intent)
 	{
-		// TODO Auto-generated method stub
 		return null;
 	}
 }

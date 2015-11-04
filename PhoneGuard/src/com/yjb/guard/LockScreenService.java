@@ -43,12 +43,10 @@ public class LockScreenService extends Service
 		mManager = (WindowManager) getApplicationContext().getSystemService(
 				Context.WINDOW_SERVICE);
 		mUtil = ConfUtil.getConfUtil(getApplicationContext());
-		
 		// 锁屏的界面对应的view布局为lock.xml,lock.xml中有密码输入框和解锁按钮.把view加入wm中，service启动时实现这个view
 		view = View.inflate(getApplicationContext(), R.layout.lock, null);// 加载view
 		final EditText pass = (EditText) view.findViewById(R.id.etPass);
 		Button button = (Button) view.findViewById(R.id.btnUnlock);
-		
 		button.setOnClickListener(new OnClickListener()
 		{
 			@Override
@@ -56,14 +54,14 @@ public class LockScreenService extends Service
 			{
 				String pwd = pass.getText().toString().trim();
 				String oldpwd = mUtil.getPwd();
-				
 				if (pwd.equals(oldpwd))// 密码相同则解锁
 				{
 					stopSelf();// 服务停止，屏幕就被解锁了
 				}
 				else
 				{
-					Toast.makeText(getApplicationContext(), "密码不正确", Toast.LENGTH_SHORT).show();
+					Toast.makeText(getApplicationContext(), "密码不正确",
+							Toast.LENGTH_SHORT).show();
 				}
 			}
 		});

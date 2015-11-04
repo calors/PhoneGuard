@@ -23,7 +23,6 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.IBinder;
 import android.telephony.SmsManager;
-import android.util.Log;
 
 import com.baidu.location.BDLocation;
 import com.baidu.location.BDLocationListener;
@@ -45,7 +44,6 @@ import com.baidu.location.LocationClientOption.LocationMode;
 public class LocateService extends Service
 {
 	private static final int UPDATE_TIME = 5000;
-	private static final String TAG = "genolog";
 	private ConfUtil mUtil;
 	private Context mContext;
 	private String address = null;
@@ -57,6 +55,7 @@ public class LocateService extends Service
 		mContext = getApplicationContext();
 		mUtil = ConfUtil.getConfUtil(mContext);
 		mLocationClient = new LocationClient(mContext);
+		// 新开线程，防止阻塞
 		new Thread(new Runnable()
 		{
 			@Override
@@ -70,18 +69,17 @@ public class LocateService extends Service
 
 	private void locate()
 	{
-		Log.i(TAG, "locateStart");
 		// 设置定位条件
-		LocationClientOption option = new LocationClientOption();
-		option.setOpenGps(true);// 是否打开GPS
-		option.setLocationMode(LocationMode.Hight_Accuracy);// 高精度定位,GPS，网络同时使用
-		option.setCoorType("bd09ll");// 设置返回值的坐标类型。
-		// option.setIsNeedLocationDescribe(true);// 设置是否需要位置语义化结果，
-		option.setIsNeedAddress(true);// 设置是否需要地址信息
-		option.setPriority(LocationClientOption.NetWorkFirst);// 设置定位优先级
-		option.setProdName("LocationDemo"); // 设置产品线名称。
-		option.setScanSpan(UPDATE_TIME);// 设置定时定位的时间间隔。单位毫秒
-		mLocationClient.setLocOption(option);
+		LocationClientOption _option = new LocationClientOption();
+		_option.setOpenGps(true);// 是否打开GPS
+		_option.setLocationMode(LocationMode.Hight_Accuracy);// 高精度定位,GPS，网络同时使用
+		_option.setCoorType("bd09ll");// 设置返回值的坐标类型。
+		_option.setIsNeedLocationDescribe(true);// 设置是否需要位置语义化结果，
+		_option.setIsNeedAddress(true);// 设置是否需要地址信息
+		_option.setPriority(LocationClientOption.NetWorkFirst);// 设置定位优先级
+		_option.setProdName("LocationDemo"); // 设置产品线名称。
+		_option.setScanSpan(UPDATE_TIME);// 设置定时定位的时间间隔。单位毫秒
+		mLocationClient.setLocOption(_option);
 		mLocationClient.registerLocationListener(new BDLocationListener()
 		{
 			@Override
@@ -97,6 +95,7 @@ public class LocateService extends Service
 			}
 		});
 		mLocationClient.start();// 开始定位
+		// 开启定时器，以便决定什么时候调用google的API进行查询
 		final Timer _timer = new Timer();
 		TimerTask _task = new TimerTask()
 		{
@@ -117,7 +116,6 @@ public class LocateService extends Service
 
 	private void sendAddress()
 	{
-		Log.i(TAG, address);
 		// 把位置信息发给好友
 		SmsManager manager = SmsManager.getDefault();
 		String telephone = mUtil.getTelephone();
@@ -146,7 +144,6 @@ public class LocateService extends Service
 			location = _manager
 					.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 		}
-		Log.i(TAG, location.toString());
 		double lat = location.getLatitude();// 得到纬度
 		double lon = location.getLongitude();// 得到经度
 		// 把经纬度进行转码得位置描述 后给好友通过短信把位置信息发过去
@@ -167,7 +164,6 @@ public class LocateService extends Service
 	@Override
 	public IBinder onBind(Intent intent)
 	{
-		// TODO Auto-generated method stub
 		return null;
 	}
 }

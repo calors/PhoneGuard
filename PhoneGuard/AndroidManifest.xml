@@ -5,7 +5,7 @@
     android:versionName="1.0" >
 
     <uses-sdk
-        android:minSdkVersion="8"
+        android:minSdkVersion="10"
         android:targetSdkVersion="17" />
     <!-- 读电话状态的权限 读取sim卡信息 -->
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
@@ -40,7 +40,6 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <!-- 写入扩展存储，向扩展卡写入数据 -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-
     <!-- 访问网络，网络定位需要上网 -->
     <uses-permission android:name="android.permission.INTERNET" />
     <!-- SD卡读取权限 -->
@@ -51,12 +50,16 @@
         android:icon="@drawable/icon"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
-        <uses-library android:name="com.google.android.maps" />
 
+        <!-- google map -->
+        <uses-library
+            android:name="com.google.android.maps"
+            android:required="false" />
+        <!-- BD Map key -->
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
             android:value="KFCpRbjlui8LXWglCVkgMGGK" />
-
+        <!-- welcome page -->
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name" >
@@ -66,42 +69,49 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <!-- setting page -->
         <activity
             android:name=".SettingActivity"
             android:label="@string/title_activity_setting" >
         </activity>
+        <!-- Login page -->
         <activity
             android:name=".LoginActivity"
             android:label="@string/title_activity_login" >
         </activity>
+        <!-- Home page -->
         <activity
             android:name=".HomeActivity"
             android:label="@string/title_activity_home" >
         </activity>
+        <!-- Lost passwor -->
         <activity
             android:name=".FindPassActivity"
             android:label="@string/title_activity_find_pass" >
         </activity>
-        <activity
-            android:name=".ShowActivity"
-            android:label="@string/title_activity_show" >
-        </activity>
-
+        <!-- boot broadcast receiver -->
         <receiver android:name=".CheckSimReciver" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".SmsReciver" >
-            <intent-filter android:priority="2147483647" >
+        <!-- SMS broadcast receiver -->
+        <receiver
+            android:name=".SmsReciver"
+            android:permission="android.permission.BROADCAST_SMS" >
+            <intent-filter android:priority="1000" >
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
             </intent-filter>
         </receiver>
-
+        <!-- Lock -->
         <service android:name=".LockScreenService" />
+        <!-- backup -->
         <service android:name=".BackUpService" />
+        <!-- delete -->
         <service android:name=".DelService" />
+        <!-- locate -->
         <service android:name=".LocateService" />
+        <!-- Alarm -->
         <service android:name=".AlarmService" />
     </application>
 

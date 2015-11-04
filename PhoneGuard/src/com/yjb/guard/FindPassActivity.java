@@ -33,6 +33,7 @@ public class FindPassActivity extends Activity
 		mUtil = ConfUtil.getConfUtil(mContext);
 		mSpinner = (Spinner) findViewById(R.id.spQuestionFindPwd);
 		mEditText = (EditText) findViewById(R.id.edAnswerFindPwd);
+		// 设置适配器和监听
 		ArrayAdapter<CharSequence> _adapter = ArrayAdapter.createFromResource(
 				mContext, R.array.questionList,
 				android.R.layout.simple_list_item_1);
