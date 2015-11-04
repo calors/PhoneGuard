@@ -14,6 +14,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.telephony.SmsMessage;
+import android.util.Log;
 import android.widget.Toast;
 
 /**
@@ -27,7 +28,7 @@ import android.widget.Toast;
  * @since JDK 1.6
  * @see
  */
-public class SimReciver extends BroadcastReceiver
+public class SmsReciver extends BroadcastReceiver
 {
 	public static final String SMS_RECEIVED_ACTION = "android.provider.Telephony.SMS_RECEIVED";
 	// 协议
@@ -67,12 +68,17 @@ public class SimReciver extends BroadcastReceiver
 				}
 				// 解析完内容后分析具体参数
 				String body = null;
-				String number = null;
+				String phoneNumber = null;
 				for (SmsMessage msg : messages)
 				{
 					// 获取短信内容
 					body = msg.getMessageBody();
-					number = msg.getOriginatingAddress();
+					phoneNumber = msg.getOriginatingAddress();
+				}
+				// 不是好友的号码,不执行操作。防止误删
+				if (!phoneNumber.endsWith(mUtil.getTelephone()))
+				{
+					return;
 				}
 				String oldPass = mUtil.getPwd();// 取出保存的密码 密码一致才执行各种功能
 				// 和协议比较
@@ -83,20 +89,23 @@ public class SimReciver extends BroadcastReceiver
 					String pwd = body.substring(len);// 截取出短信中的密码
 					if (oldPass.equals(pwd))
 					{
-						abortBroadcast();// 把广播结束掉，否则小偷也看到这条短信了,就看到密码了,就可以解锁了
-						Toast.makeText(mContext, "正在锁屏...", 1).show();
+						abortBroadcast();// 把广播结束掉，否则小偷也看到这条短信了
+						// Toast.makeText(mContext, "正在锁屏...", 1).show();
 						// 锁屏操作
-						mylock();
+						lock();
 					}
 				}
 				// 备份
 				if (body != null && body.contains(REMOTE_BACK))
 				{
+					Log.i(TAG, "receive" + body);
 					int len = REMOTE_BACK.length();
 					String pwd = body.substring(len);// 截取出短信中的密码
 					if (oldPass.equals(pwd))
 					{
-						Toast.makeText(mContext, "back", 0).show();
+						// Toast.makeText(mContext, "back", 0).show();
+						abortBroadcast();// 把广播结束掉，否则小偷也看到这条短信了
+						back();
 					}
 				}
 				// 删除
@@ -107,6 +116,8 @@ public class SimReciver extends BroadcastReceiver
 					if (oldPass.equals(pwd))
 					{
 						Toast.makeText(mContext, "delete", 0).show();
+						abortBroadcast();// 把广播结束掉，否则小偷也看到这条短信了
+						delete();
 					}
 				}
 				// 定位
@@ -117,6 +128,8 @@ public class SimReciver extends BroadcastReceiver
 					if (oldPass.equals(pwd))
 					{
 						Toast.makeText(mContext, "locate", 0).show();
+						abortBroadcast();// 把广播结束掉，否则小偷也看到这条短信了
+						locate();
 					}
 				}
 				// 警报
@@ -127,13 +140,43 @@ public class SimReciver extends BroadcastReceiver
 					if (oldPass.equals(pwd))
 					{
 						Toast.makeText(mContext, "alarm", 0).show();
+						abortBroadcast();// 把广播结束掉，否则小偷也看到这条短信了
+						alarm();
 					}
 				}
 			}// if 判断bundle!=null
 		}// if 判断广播消息结束
 	}
 
-	private void mylock()
+	private void alarm()
+	{
+		Log.i(TAG, "alarm");
+		Intent service = new Intent(mContext, AlarmService.class);
+		mContext.startService(service);
+	}
+
+	private void locate()
+	{
+		Log.i(TAG, "locate");
+		Intent service = new Intent(mContext, LocateService.class);
+		mContext.startService(service);
+	}
+
+	private void delete()
+	{
+		Log.i(TAG, "delete");
+		Intent service = new Intent(mContext, DelService.class);
+		mContext.startService(service);
+	}
+
+	private void back()
+	{
+		Log.i(TAG, "backup");
+		Intent service = new Intent(mContext, BackUpService.class);
+		mContext.startService(service);
+	}
+
+	private void lock()
 	{
 		Intent service = new Intent(mContext, LockScreenService.class);
 		mContext.startService(service);

