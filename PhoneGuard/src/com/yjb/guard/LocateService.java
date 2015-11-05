@@ -135,14 +135,18 @@ public class LocateService extends Service
 		// 获得定位服务
 		LocationManager _manager = (LocationManager) mContext
 				.getSystemService(Context.LOCATION_SERVICE);
-		// 获得最后的位置
-		Location location = _manager
-				.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-		// GPS获取不到，则用网络获取
-		if (location == null)
+		// 获得位置
+		Location location = null;
+		while (location == null)
 		{
 			location = _manager
-					.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+					.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+			// GPS获取不到，则用网络获取
+			if (location == null)
+			{
+				location = _manager
+						.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+			}
 		}
 		double lat = location.getLatitude();// 得到纬度
 		double lon = location.getLongitude();// 得到经度

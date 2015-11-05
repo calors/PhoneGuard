@@ -56,7 +56,7 @@ public class LockScreenService extends Service
 				String oldpwd = mUtil.getPwd();
 				if (pwd.equals(oldpwd))// 密码相同则解锁
 				{
-					stopSelf();// 服务停止，屏幕就被解锁了
+					stopSelf();// 服务停止，屏幕解锁了
 				}
 				else
 				{
@@ -88,7 +88,6 @@ public class LockScreenService extends Service
 	@Override
 	public IBinder onBind(Intent intent)
 	{
-		// TODO Auto-generated method stub
 		return null;
 	}
 }
