@@ -17,6 +17,7 @@
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
     <!-- 接收开机广播 -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <!-- 在service中创建窗口，需要的权限 -->
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <!-- 读取联系人 -->
     <uses-permission android:name="android.permission.READ_CONTACTS" />
@@ -96,9 +97,7 @@
             </intent-filter>
         </receiver>
         <!-- SMS broadcast receiver -->
-        <receiver
-            android:name=".SmsReciver"
-            android:permission="android.permission.BROADCAST_SMS" >
+        <receiver android:name=".SmsReciver" >
             <intent-filter android:priority="1000" >
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
             </intent-filter>

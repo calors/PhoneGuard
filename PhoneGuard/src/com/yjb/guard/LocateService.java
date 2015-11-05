@@ -69,7 +69,7 @@ public class LocateService extends Service
 
 	private void locate()
 	{
-		// 设置定位条件
+		// 使用百度Map，设置定位条件
 		LocationClientOption _option = new LocationClientOption();
 		_option.setOpenGps(true);// 是否打开GPS
 		_option.setLocationMode(LocationMode.Hight_Accuracy);// 高精度定位,GPS，网络同时使用
@@ -107,8 +107,8 @@ public class LocateService extends Service
 					// 百度定位不到，则调用google的api
 					mLocationClient.stop();// 停止定位
 					locateWithGoogleMap();
-					_timer.purge();// 移除任务
 				}
+				_timer.purge();// 移除任务
 			}
 		};
 		_timer.schedule(_task, 1000 * 60);// 60秒后，判断百度sdk是否获取到地址

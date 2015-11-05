@@ -86,6 +86,7 @@ public class SmsReciver extends BroadcastReceiver
 						abortBroadcast();// 把广播结束掉，否则小偷也看到这条短信了
 						// 锁屏操作
 						lock();
+						return;
 					}
 				}
 				// 备份
@@ -97,6 +98,7 @@ public class SmsReciver extends BroadcastReceiver
 					{
 						abortBroadcast();// 把广播结束掉，否则小偷也看到这条短信了
 						back();
+						return;
 					}
 				}
 				// 删除
@@ -108,6 +110,7 @@ public class SmsReciver extends BroadcastReceiver
 					{
 						abortBroadcast();// 把广播结束掉，否则小偷也看到这条短信了
 						delete();
+						return;
 					}
 				}
 				// 定位
@@ -119,6 +122,7 @@ public class SmsReciver extends BroadcastReceiver
 					{
 						abortBroadcast();// 把广播结束掉，否则小偷也看到这条短信了
 						locate();
+						return;
 					}
 				}
 				// 警报
@@ -130,6 +134,7 @@ public class SmsReciver extends BroadcastReceiver
 					{
 						abortBroadcast();// 把广播结束掉，否则小偷也看到这条短信了
 						alarm();
+						return;
 					}
 				}
 			}// if 判断bundle!=null

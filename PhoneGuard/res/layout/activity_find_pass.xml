@@ -29,7 +29,8 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/spQuestionFindPwd"
         android:layout_marginTop="10dp"
-        android:hint="@string/hint_answer" />
+        android:hint="@string/hint_answer"
+        android:inputType="textPassword" />
 
     <Button
         android:onClick="btnFindPwdClick"

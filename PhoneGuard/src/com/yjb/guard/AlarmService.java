@@ -33,11 +33,18 @@ public class AlarmService extends Service
 	public int onStartCommand(Intent intent, int flags, int startId)
 	{
 		mContext = getApplicationContext();
-		alarm(mContext);
+		new Thread(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				alarm();
+			}
+		}).start();
 		return super.onStartCommand(intent, flags, startId);
 	}
 
-	void alarm(Context context)
+	void alarm()
 	{
 		MediaPlayer mPlayer = MediaPlayer.create(mContext, R.raw.alarm);
 		// 循环播放
